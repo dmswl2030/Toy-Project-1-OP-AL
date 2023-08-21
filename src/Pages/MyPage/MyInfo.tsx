@@ -6,13 +6,12 @@ import 'Styles/MyInfo.scss';
 
 const MyInfo: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [defaultEmail, setDefaultEmail] = useState(''); //처음 불러오는 이메일
-
-  const [defaultName, setDefaultName] = useState(''); //처음 불러오는 닉네임
-  const [displayName, setDisplayName] = useState('');
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [editProfile, setEditProfile] = useState(false); //편집 수정모드
+  const [defaultEmail, setDefaultEmail] = useState<string>(''); //처음 불러오는 이메일
+  const [defaultName, setDefaultName] = useState<string>(''); //처음 불러오는 닉네임
+  const [displayName, setDisplayName] = useState<string>(''); //표시되는 닉네임
+  const [oldPassword, setOldPassword] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [editProfile, setEditProfile] = useState<boolean>(false); //편집 수정모드
 
   const [cookies] = useCookies(['accessToken']);
   const accessToken = cookies.accessToken;
@@ -42,10 +41,6 @@ const MyInfo: React.FC = () => {
 
   //수정완료 버튼을 눌렀을 때
   const updateProfileHandler = async () => {
-    setDisplayName(defaultName);
-    setOldPassword(oldPassword);
-    setNewPassword(newPassword);
-
     const requestBody: userModifyRequestBody = {
       displayName: displayName || defaultName,
       oldPassword,
@@ -53,12 +48,13 @@ const MyInfo: React.FC = () => {
     };
     try {
       await userModifyApi(accessToken, requestBody);
+      setDefaultName(displayName || defaultName); //history.go(0) 대신 추가
     } catch (error) {
       console.log(error);
     }
     setEditProfile(!editProfile);
-    history.go(0);
   };
+
   return (
     <div className="myinfo">
       {defaultName.length === 0 ? (
